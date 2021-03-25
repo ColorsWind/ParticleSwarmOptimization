@@ -1,5 +1,6 @@
 package net.colors_wind.particleswarmoptimization
 
+import java.lang.IllegalArgumentException
 import kotlin.random.Random
 
 data class Bound(val lowerBound: Double, val upperBound: Double) {
@@ -20,13 +21,14 @@ class Vector(private val array: DoubleArray, private val bounds: Array<Bound>) {
         }
     }
 
+
     operator fun get(index: Int) = array[index]
     operator fun set(index: Int, value: Double) {
         array[index] = bounds[index](value)
     }
 
     operator fun unaryPlus() : Vector = this.copy()
-    operator fun plusAssign(other: Vector) = array.indices.forEach { this[it] =+ other[it] }
+    operator fun plusAssign(other: Vector) =  array.indices.forEach { this[it] =+ other[it] }
     operator fun plus(other: Vector) = this.copy().also { it += other }
 
     operator fun unaryMinus() = copy().also { array.indices.forEach { this[it] = -this[it] } }
@@ -35,9 +37,30 @@ class Vector(private val array: DoubleArray, private val bounds: Array<Bound>) {
 
     operator fun timesAssign(k: Double) = array.indices.forEach { this[it] *= k }
     operator fun times(k: Double) = this.copy().also { it *= k }
-    operator fun Double.times(vector: Vector) = vector.copy().also { it *= this }
+
+    operator fun iterator() = array.iterator()
+
+    fun sumBy(func: (Double) -> Double) = array.sumByDouble(func)
+    fun sumByWithIndex(func: (Int, Double) -> Double) : Double {
+        var sum = 0.0
+        array.forEachIndexed{index,value ->
+            sum += func(index+1,value)
+        }
+        return sum
+    }
+    fun checkDimension(vector: Vector) : Vector {
+        if (vector.dimension != this.dimension) throw IllegalArgumentException()
+        return this
+    }
 
     fun copy() : Vector = Vector(array.clone(), bounds)
 
+    override fun toString(): String {
+        return array.contentToString()
+    }
+
+    companion object {
+        operator fun Double.times(vector: Vector) = vector.copy().also { it *= this }
+    }
 
 }
