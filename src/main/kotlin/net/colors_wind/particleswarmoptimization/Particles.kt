@@ -20,6 +20,7 @@ class Particles(val question: Question) {
 }
 
 data class Particle(private val particles: Particles) {
+    /** attribute **/
     private var velocity = Vector(DoubleArray(particles.question.dimension){
         val bound = particles.question.bounds[it]
         Random.nextDouble(bound.lowerBound * 0.2, bound.upperBound * 0.2)
@@ -27,6 +28,7 @@ data class Particle(private val particles: Particles) {
     var location = Vector(particles.question.bounds)
     var fitness: Double = particles.question.fit(location)
 
+    /** pBest **/
     private var pBest = location
     private var pBestFitness = fitness
 
@@ -48,7 +50,4 @@ data class Particle(private val particles: Particles) {
 
 
 
-    fun getMessage(): String {
-        return "fitness=$fitness, location=$location."
-    }
 }

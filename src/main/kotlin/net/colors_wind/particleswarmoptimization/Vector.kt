@@ -59,6 +59,10 @@ class Vector(private val array: DoubleArray, private val bounds: Array<Bound>) {
         return array.contentToString()
     }
 
+    fun toCSVLikeString(): String {
+        return array.joinToString(",")
+    }
+
     companion object {
         operator fun Double.times(vector: Vector) = vector.copy().also { it *= this }
     }

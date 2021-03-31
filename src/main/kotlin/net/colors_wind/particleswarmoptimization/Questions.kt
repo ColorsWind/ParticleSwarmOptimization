@@ -1,9 +1,7 @@
 package net.colors_wind.particleswarmoptimization
 
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.sin
-import kotlin.math.sqrt
+import java.lang.Math.pow
+import kotlin.math.*
 
 fun Double.square() : Double = this * this
 
@@ -11,11 +9,11 @@ abstract class Question {
     abstract val fit: (Vector) -> Double
     abstract val dimension: Int
     abstract val bounds: Array<Bound>
-    open val N = 40
+    open val N = 300
     open fun omega(particles: Particles) = 0.5
     open val c1 = 2.0
     open val c2 = 2.0
-    open val Gmax = 2000
+    open val Gmax = 500
 }
 
 class Sphere : Question() {
@@ -51,8 +49,9 @@ class Rosenbrock : Question() {
 }
 
 class Easy : Question() {
+    // max 0.6 min 0.2
     override fun omega(particles: Particles): Double {
-        return 0.2 + 0.5 * particles.iterations
+        return ((Gmax - particles.iterations) / Gmax.toDouble()).pow(1/ PI.square()) * (0.6 - 0.2) + 0.2
     }
     override val dimension = 2
     override val fit: (Vector) -> Double = { vector ->
