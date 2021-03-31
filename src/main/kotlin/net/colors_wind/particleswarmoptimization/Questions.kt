@@ -1,6 +1,7 @@
 package net.colors_wind.particleswarmoptimization
 
 import java.lang.Math.pow
+import java.lang.RuntimeException
 import kotlin.math.*
 
 fun Double.square() : Double = this * this
@@ -9,11 +10,13 @@ abstract class Question {
     abstract val fit: (Vector) -> Double
     abstract val dimension: Int
     abstract val bounds: Array<Bound>
-    open val N = 300
-    open fun omega(particles: Particles) = 0.5
+    open val N = 50
+    open fun omega(particle: Particle) : Double {
+        throw RuntimeException()
+    }
     open val c1 = 2.0
     open val c2 = 2.0
-    open val Gmax = 500
+    open val Gmax = 1000
 }
 
 class Sphere : Question() {
@@ -23,6 +26,9 @@ class Sphere : Question() {
         vector.sumBy { it * it }
     }
     override val bounds = Array(dimension) { bound }
+    override fun omega(particle: Particle): Double {
+        return 0.2 + (0.9 - 0.2) * particle.rank.toDouble() / N.toDouble()
+    }
 }
 
 class Schwefel : Question() {
@@ -32,6 +38,9 @@ class Schwefel : Question() {
         vector.sumByWithIndex { i, x -> -x * sin(sqrt(abs(x))) + 418.9829 * i }
     }
     override val bounds = Array(dimension) { bound }
+    override fun omega(particle: Particle): Double {
+        return 0.2 + (0.9 - 0.2) * particle.rank.toDouble() / N.toDouble()
+    }
 }
 
 class Rosenbrock : Question() {
@@ -46,12 +55,15 @@ class Rosenbrock : Question() {
         sum
     }
     override val bounds = Array(dimension) { bound }
+    override fun omega(particle: Particle): Double {
+        return 0.2 + (0.9 - 0.2) * particle.rank.toDouble() / N.toDouble()
+    }
 }
 
 class Easy : Question() {
-    // max 0.6 min 0.2
-    override fun omega(particles: Particles): Double {
-        return ((Gmax - particles.iterations) / Gmax.toDouble()).pow(1/ PI.square()) * (0.6 - 0.2) + 0.2
+    // max 0.9 min 0.2
+    override fun omega(particle: Particle): Double {
+        return 0.1 + (0.5 - 0.2) * particle.rank.toDouble() / N.toDouble()
     }
     override val dimension = 2
     override val fit: (Vector) -> Double = { vector ->
