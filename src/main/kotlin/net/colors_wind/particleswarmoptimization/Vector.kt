@@ -8,8 +8,10 @@ import kotlin.random.Random
 data class Bound(val lowerBound: Double, val upperBound: Double) {
     operator fun invoke(value: Double) =
         when {
-            value < lowerBound -> lowerBound
-            value > upperBound -> upperBound
+//            value < lowerBound -> lowerBound
+//            value > upperBound -> upperBound
+            value < lowerBound -> Random.nextDouble(lowerBound, upperBound)
+            value > upperBound -> Random.nextDouble(lowerBound, upperBound)
             else -> value
         }
 }
@@ -35,7 +37,7 @@ class Vector(private val array: DoubleArray, private val bounds: Array<Bound>) {
     operator fun plus(other: Vector) = this.copy().also { it += other }
 
     operator fun unaryMinus() = copy().also { array.indices.forEach { this[it] = -this[it] } }
-    operator fun minusAssign(other: Vector) = array.indices.forEach { this[it] = -other[it] }
+    operator fun minusAssign(other: Vector) = array.indices.forEach { this[it] = this[it] -other[it] }
     operator fun minus(other: Vector) = copy().also { it -= other }
 
     operator fun timesAssign(k: Double) = array.indices.forEach { this[it] = this[it] * k }
