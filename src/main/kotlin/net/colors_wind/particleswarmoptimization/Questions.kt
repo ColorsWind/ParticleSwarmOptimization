@@ -10,7 +10,7 @@ abstract class Question {
     abstract val fit: (Vector) -> Double
     abstract val dimension: Int
     abstract val bounds: Array<Bound>
-    open val N = 50
+    open val N = 40
     open fun omega(particle: Particle) : Double {
         throw RuntimeException()
     }
@@ -32,14 +32,14 @@ class Sphere : Question() {
 }
 
 class Schwefel : Question() {
-    override val dimension = 30
+    override val dimension = 10
     val bound = Bound(-500.0, 500.0)
     override val fit: (Vector) -> Double = { vector ->
-        vector.sumByWithIndex { i, x -> -x * sin(sqrt(abs(x))) + 418.9829 * i }
+        vector.sumByWithIndex { i, x -> -x * sin(sqrt(abs(x)))} + dimension * 418.9829
     }
     override val bounds = Array(dimension) { bound }
     override fun omega(particle: Particle): Double {
-        return 0.2 + (0.9 - 0.2) * particle.rank.toDouble() / N.toDouble()
+        return 0.4 + (0.9 - 0.4) * particle.rank.toDouble() / N.toDouble()
     }
 }
 
@@ -63,7 +63,7 @@ class Rosenbrock : Question() {
 class Easy : Question() {
     // max 0.9 min 0.2
     override fun omega(particle: Particle): Double {
-        return 0.1 + (0.5 - 0.2) * particle.rank.toDouble() / N.toDouble()
+        return 0.4 + (0.9 - 0.4) * particle.rank.toDouble() / N.toDouble()
     }
     override val dimension = 2
     override val fit: (Vector) -> Double = { vector ->

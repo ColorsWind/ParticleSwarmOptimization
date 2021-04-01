@@ -6,7 +6,7 @@ import java.io.PrintStream
 fun main(args: Array<String>) {
     //val particles = Particles(Schwefel())
     //val particles = Particles(Sphere())
-    val question = Easy()
+    val question = Schwefel()
     val particles = Particles(question)
     val writer = FileWriter(File("dump.log"))
     repeat(question.Gmax) {

@@ -27,7 +27,7 @@ data class Particle(private val particles: Particles) {
     /** attribute **/
     var velocity = Vector(DoubleArray(particles.question.dimension){
         val bound = particles.question.bounds[it]
-        Random.nextDouble(bound.lowerBound * 0.2, bound.upperBound * 0.2)
+        Random.nextDouble(bound.lowerBound * 0.12, bound.upperBound * 0.12)
     }, particles.question.bounds)
     var location = Vector(particles.question.bounds)
     var fitness: Double = particles.question.fit(location)
