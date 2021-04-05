@@ -35,16 +35,6 @@ data class Particle(private val particles: Particles, private val index: Int) {
 
     /** pBest **/
     private var pBest = ParticleValue(this)
-    private fun gBest() : ParticleValue {
-        val copy = particles.particles.clone()
-        copy.shuffle()
-        val range = copy.copyOfRange(0, particles.question.connectNum(particles))
-        //println(range.size)
-        return copy.copyOfRange(0, particles.question.connectNum(particles))
-            .minByOrNull { it.pBest.fitness }!!
-            .pBest
-
-    }
 
 
     /** rank **/
@@ -52,9 +42,9 @@ data class Particle(private val particles: Particles, private val index: Int) {
 
 
     fun update() {
-        velocity = (particles.question.omega(this) * velocity
+        velocity = (particles.question.omega * velocity
                 + particles.question.c1 * Random.nextDouble() * (pBest.location - location)
-                + particles.question.c2 * Random.nextDouble() * (gBest().location - location))
+                + particles.question.c2 * Random.nextDouble() * (particles.gBest.location - location))
         //print("$location ${location + velocity}")
         location = location + velocity
         //println(" $location")
@@ -65,7 +55,7 @@ data class Particle(private val particles: Particles, private val index: Int) {
         if (pBest.fitness < particles.gBest.fitness) {
             particles.gBest = pBest
         }
-        if (Random.nextDouble() < (1-particles.iterations / particles.question.Gmax) * 0.01) pBest = particles[Random.nextInt(particles.question.N)].pBest
+        //if (Random.nextDouble() < (1-particles.iterations / particles.question.Gmax) * 0.01) pBest = particles[Random.nextInt(particles.question.N)].pBest
     }
 
 }
