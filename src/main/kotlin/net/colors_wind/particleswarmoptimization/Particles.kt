@@ -16,8 +16,8 @@ class Particles(val question: Question) {
             particle.rank = index + 1}
         particles.forEach { particle ->
             particle.update()
-            iterations++
         }
+        iterations++
     }
 
     operator fun get(index: Int) = particles[(index + question.N) % question.N]
@@ -37,11 +37,14 @@ data class Particle(private val particles: Particles, private val index: Int) {
     private var pBest = ParticleValue(this)
     private fun gBest() : ParticleValue {
         return object : Iterator<Particle> {
-            var size = particles.question.connectNum(particles) * 2 + 1
-            var curr = this@Particle.index - size
+            var size = particles.question.connectNum(particles)
+
+            var curr = this@Particle.index - size / 2
+            var last = curr + size
 
             override fun hasNext(): Boolean {
-                return curr < this@Particle.index + size
+
+                return curr <= last
             }
 
             override fun next(): Particle {
