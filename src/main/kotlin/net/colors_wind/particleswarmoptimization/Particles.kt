@@ -1,13 +1,12 @@
 package net.colors_wind.particleswarmoptimization
 
 import net.colors_wind.particleswarmoptimization.Vector.Companion.times
-import javax.xml.stream.Location
 import kotlin.random.Random
 
 class Particles(val question: Question) {
 
     var iterations: Int = 0
-    val particles: Array<Particle> = Array(question.N){ Particle(this) }
+    val particles: Array<Particle> = Array(question.N){ Particle(this, it) }
 
     /** attribute **/
     var gBest = ParticleValue(particles.maxByOrNull { it.fitness }!!)
@@ -21,9 +20,11 @@ class Particles(val question: Question) {
         }
     }
 
+    operator fun get(index: Int) = particles[(index + question.N) % question.N]
+
 }
 
-data class Particle(private val particles: Particles) {
+data class Particle(private val particles: Particles, private val index: Int) {
     /** attribute **/
     var velocity = Vector(DoubleArray(particles.question.dimension){
         val bound = particles.question.bounds[it]
@@ -34,7 +35,22 @@ data class Particle(private val particles: Particles) {
 
     /** pBest **/
     private var pBest = ParticleValue(this)
-    var pBestUpdate = false
+    private fun gBest() : ParticleValue {
+        return object : Iterator<Particle> {
+            var size = particles.question.connectNum(particles) * 2 + 1
+            var curr = this@Particle.index - size
+
+            override fun hasNext(): Boolean {
+                return curr < this@Particle.index + size
+            }
+
+            override fun next(): Particle {
+                return particles[curr++]
+            }
+
+        }.asSequence().minByOrNull { it.pBest.fitness }!!.pBest
+    }
+
 
     /** rank **/
     var rank = 0
@@ -43,15 +59,14 @@ data class Particle(private val particles: Particles) {
     fun update() {
         velocity = (particles.question.omega(this) * velocity
                 + particles.question.c1 * Random.nextDouble() * (pBest.location - location)
-                + particles.question.c2 * Random.nextDouble() * (particles.gBest.location - location))
+                + particles.question.c2 * Random.nextDouble() * (gBest().location - location))
         //print("$location ${location + velocity}")
         location = location + velocity
         //println(" $location")
         fitness = particles.question.fit(location)
         if (fitness < pBest.fitness) {
             pBest = ParticleValue(this)
-            pBestUpdate = true
-        } else pBestUpdate = false
+        }
         if (pBest.fitness < particles.gBest.fitness) {
             particles.gBest = pBest
         }

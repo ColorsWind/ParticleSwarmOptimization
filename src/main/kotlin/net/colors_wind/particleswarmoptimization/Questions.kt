@@ -14,6 +14,9 @@ abstract class Question {
     open fun omega(particle: Particle) : Double {
         throw RuntimeException()
     }
+    open fun connectNum(particles: Particles) : Int {
+        return (0.5 *  particles.iterations.toDouble() / Gmax.toDouble()).toInt()
+    }
     open val c1 = 2.0
     open val c2 = 2.0
     open val Gmax = 1000
@@ -32,10 +35,10 @@ class Sphere : Question() {
 }
 
 class Schwefel : Question() {
-    override val dimension = 10
+    override val dimension = 5
     val bound = Bound(-500.0, 500.0)
     override val fit: (Vector) -> Double = { vector ->
-        vector.sumByWithIndex { i, x -> -x * sin(sqrt(abs(x)))} + dimension * 418.9829
+        vector.sumByWithIndex { _, x -> -x * sin(sqrt(abs(x)))} + dimension * 418.9829
     }
     override val bounds = Array(dimension) { bound }
     override fun omega(particle: Particle): Double {
