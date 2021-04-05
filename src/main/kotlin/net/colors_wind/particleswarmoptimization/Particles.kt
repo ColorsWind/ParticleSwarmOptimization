@@ -36,22 +36,14 @@ data class Particle(private val particles: Particles, private val index: Int) {
     /** pBest **/
     private var pBest = ParticleValue(this)
     private fun gBest() : ParticleValue {
-        return object : Iterator<Particle> {
-            var size = particles.question.connectNum(particles)
+        val copy = particles.particles.clone()
+        copy.shuffle()
+        val range = copy.copyOfRange(0, particles.question.connectNum(particles))
+        //println(range.size)
+        return copy.copyOfRange(0, particles.question.connectNum(particles))
+            .minByOrNull { it.pBest.fitness }!!
+            .pBest
 
-            var curr = this@Particle.index - size / 2
-            var last = curr + size
-
-            override fun hasNext(): Boolean {
-
-                return curr <= last
-            }
-
-            override fun next(): Particle {
-                return particles[curr++]
-            }
-
-        }.asSequence().minByOrNull { it.pBest.fitness }!!.pBest
     }
 
 
@@ -73,6 +65,7 @@ data class Particle(private val particles: Particles, private val index: Int) {
         if (pBest.fitness < particles.gBest.fitness) {
             particles.gBest = pBest
         }
+        if (Random.nextDouble() < (1-particles.iterations / particles.question.Gmax) * 0.01) pBest = particles[Random.nextInt(particles.question.N)].pBest
     }
 
 }
