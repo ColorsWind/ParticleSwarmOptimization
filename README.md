@@ -93,7 +93,7 @@
 | 0.8   | 3.5  | 391.9381 | 590.0728 | 153.5668 |
 | 0.9   | 3.5  | 415.6896 | 566.1377 | 257.3953 |
 
-![](ParameterInvestigation.png)
+![ParameterInvestigation](ParameterInvestigation.png)
 
 
 
